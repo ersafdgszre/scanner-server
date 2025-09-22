@@ -5,3 +5,4 @@ opencv-python-headless
 pyproj
 numpy
 deep-sort-realtime
+python-multipart

@@ -1,4 +1,4 @@
-﻿FROM python:3.10-slim
+FROM python:3.10-slim
 
 ENV PYTHONUNBUFFERED=1 \
     DEBIAN_FRONTEND=noninteractive \
@@ -21,4 +21,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app
 
 EXPOSE 8000
-CMD ["sh", "-c", "uvicorn scanner_server_deepsort:app --host 0.0.0.0 --port "]
+CMD ["sh", "-c", "uvicorn scanner_server_deepsort:app --host 0.0.0.0 --port ${PORT:-8000}"]
+
