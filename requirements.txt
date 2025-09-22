@@ -1,0 +1,7 @@
+﻿fastapi
+uvicorn[standard]
+ultralytics
+opencv-python-headless
+pyproj
+numpy
+deep-sort-realtime
