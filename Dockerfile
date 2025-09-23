@@ -1,25 +1,29 @@
-FROM python:3.10-slim
+﻿FROM python:3.10-slim
 
-ENV PYTHONUNBUFFERED=1 \
-    DEBIAN_FRONTEND=noninteractive \
-    PORT=8000
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    ffmpeg \
-    libgl1 \
-    libglib2.0-0 \
-    git \
-    && rm -rf /var/lib/apt/lists/*
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-COPY requirements.txt /app/
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+# install system dependencies needed by some Python packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libgl1 \
+    libglib2.0-0 \
+    wget \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
+# copy and install python requirements
+COPY requirements.txt .
+RUN python -m pip install --upgrade pip setuptools wheel
+RUN python -m pip install --no-cache-dir -r requirements.txt
+
+# copy app
 COPY . /app
 
-EXPOSE 8000
-CMD ["sh", "-c", "uvicorn scanner_server_deepsort:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# environment hint for YOLO cache dir (optional)
+ENV YOLO_CONFIG_DIR=/tmp/Ultralytics
 
+# default command; Render will override with --port $PORT when needed
+CMD ["python", "-m", "uvicorn", "scanner_server_deepsort:app", "--host", "0.0.0.0", "--port", "8000", "--log-level", "info"]
